@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>料理ARアプリ</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: "Inter", sans-serif; /* Using Inter font */
+            background-color: #f0f4f8; /* Light background */
+        }
+        .ar-scene {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 1; /* Ensure overlay is above AR scene */
+            pointer-events: none; /* Allow clicks to pass through to AR scene */
+        }
+        .instructions-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 90%;
+            pointer-events: auto; /* Re-enable pointer events for the box */
+            margin-top: 20px;
+            color: #334155; /* Darker text for readability */
+        }
+        .marker-image {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #6366f1; /* Tailwind purple-500 */
+            border-radius: 8px;
+            margin-top: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- AR.js scene for camera and marker detection -->
+    <a-scene embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;' class="ar-scene">
+        <!-- Define a marker. We'll use barcode marker '6' for simplicity. -->
+        <!-- You can generate this marker using a QR code generator, ensuring it's a 3x3 matrix barcode. -->
+        <!-- Or, you can use a pattern marker by setting type='pattern' and url='your_marker.patt' -->
+        <!-- For this example, we'll use a barcode value of '6'. You can print a QR code with the number 6. -->
+        <a-marker preset='barcode' value='6'>
+            <!-- This entity will appear when the marker with value '6' is detected -->
+            <!-- Placeholder character: a simple box -->
+            <a-box position='0 0.5 0' material='color: #ef4444; opacity: 0.8;' scale='0.8 0.8 0.8' rotation='0 45 0'
+                   animation="property: rotation; to: 0 360 0; loop: true; dur: 3000;">
+                <a-text value="キャラ登場！" color="#fff" align="center" position="0 0.5 0" scale="1.5 1.5 1.5"></a-text>
+                <a-sphere radius="0.3" position="0 0.8 0" color="#fef08a"></a-sphere> <!-- Head -->
+                <a-box width="0.2" height="0.6" depth="0.2" position="-0.4 0.2 0" color="#fef08a"></a-box> <!-- Left Arm -->
+                <a-box width="0.2" height="0.6" depth="0.2" position="0.4 0.2 0" color="#fef08a"></a-box> <!-- Right Arm -->
+                <a-box width="0.2" height="0.6" depth="0.2" position="-0.2 -0.3 0" color="#fef08a"></a-box> <!-- Left Leg -->
+                <a-box width="0.2" height="0.6" depth="0.2" position="0.2 -0.3 0" color="#fef08a"></a-box> <!-- Right Leg -->
+            </a-box>
+            <!-- You can replace the a-box with a custom GLTF model like this: -->
+            <!-- <a-entity gltf-model="url(path/to/your/character.gltf)" scale="0.1 0.1 0.1" position="0 0 0"></a-entity> -->
+            <!-- Ensure your GLTF model is correctly scaled and positioned for the marker. -->
+        </a-marker>
+
+        <!-- A-frame camera for viewing the scene -->
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <!-- Overlay for instructions -->
+    <div class="overlay-container">
+        <div class="instructions-box">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">ARアプリを体験しよう！</h2>
+            <p class="text-gray-700">カメラの許可を求められたら「許可」してください。</p>
+            <p class="text-gray-700 mt-2">以下のマーカーをカメラに映してください。</p>
+            <p class="text-sm text-gray-500">(スマホの場合、QRコードリーダーで「6」のQRコードを生成・表示するか、印刷して使ってください)</p>
+            <img src="https://placehold.co/150x150/6366f1/ffffff?text=QR+Code+6" alt="QR Code Marker for 6" class="marker-image"/>
+        </div>
+    </div>
+</body>
+</html>
