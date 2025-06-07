@@ -20,32 +20,28 @@
             height: 100vh;
             top: 0;
             left: 0;
-            z-index: 0;
+            z-index: 0; /* AR scene is at the bottom layer */
         }
-        .overlay-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+        /* Common style for overlays */
+        .overlay-common {
+            position: fixed; /* Use fixed for full screen */
+            inset: 0; /* Covers the entire viewport */
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 1rem; /* Tailwind p-4 */
             box-sizing: border-box;
-            z-index: 1; /* Ensure overlay is above AR scene */
-            pointer-events: none; /* Allow clicks to pass through to AR scene */
+            background-color: rgba(17, 24, 39, 0.75); /* Tailwind bg-gray-900 with opacity */
         }
         .instructions-box {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 12px; /* Rounded corners */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly less opaque for better readability */
+            padding: 1.5rem; /* Tailwind p-6 */
+            border-radius: 0.75rem; /* Tailwind rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Tailwind shadow-lg */
             text-align: center;
-            max-width: 90%;
-            pointer-events: auto; /* Re-enable pointer events for the box */
-            margin-top: 20px;
+            max-width: 24rem; /* Tailwind max-w-sm */
+            width: 100%;
             color: #334155; /* Darker text for readability */
         }
         .marker-image {
@@ -58,17 +54,18 @@
             margin-left: auto;
             margin-right: auto;
         }
+        /* Utility class for hiding elements */
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
     <!-- AR.js scene for camera and marker detection -->
     <a-scene embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;' class="ar-scene">
-        <!-- Define a marker. We'll use barcode marker '6' for simplicity. -->
-        <!-- You can generate this marker using a QR code generator, ensuring it's a 3x3 matrix barcode. -->
-        <!-- Or, you can use a pattern marker by setting type='pattern' and url='your_marker.patt' -->
-        <!-- For this example, we'll use a barcode value of '6'. You can print a QR code with the number 6. -->
-        <a-marker preset='barcode' value='6'>
-            <!-- This entity will appear when the marker with value '6' is detected -->
+        <!-- Define a marker. We'll use the 'HIRO' preset marker. -->
+        <a-marker preset='hiro'>
+            <!-- This entity will appear when the HIRO marker is detected -->
             <!-- Placeholder character: a simple box -->
             <a-box position='0 0.5 0' material='color: #ef4444; opacity: 0.8;' scale='0.8 0.8 0.8' rotation='0 45 0'
                    animation="property: rotation; to: 0 360 0; loop: true; dur: 3000;">
@@ -88,15 +85,64 @@
         <a-entity camera></a-entity>
     </a-scene>
 
-    <!-- Overlay for instructions -->
-    <div class="overlay-container">
+    <!-- Initial overlay for starting the app -->
+    <div id="initial-overlay" class="overlay-common z-30">
         <div class="instructions-box">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">ARアプリを体験しよう！</h2>
-            <p class="text-gray-700">カメラの許可を求められたら「許可」してください。</p>
-            <p class="text-gray-700 mt-2">以下のマーカーをカメラに映してください。</p>
-            <p class="text-sm text-gray-500">(スマホの場合、QRコードリーダーで「6」のQRコードを生成・表示するか、印刷して使ってください)</p>
-            <img src="https://placehold.co/150x150/6366f1/ffffff?text=QR+Code+6" alt="QR Code Marker for 6" class="marker-image"/>
+            <h2 class="text-3xl font-extrabold text-indigo-700 mb-4">ARアプリへようこそ！</h2>
+            <p class="text-gray-700 text-lg mb-6">カメラを料理に向けると、特定のキャラクターが出現します。</p>
+            <button id="startButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                始める
+            </button>
         </div>
     </div>
+
+    <!-- Instructions overlay, initially hidden -->
+    <div id="instructions-overlay" class="overlay-common hidden z-20">
+        <div class="instructions-box">
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">使い方</h2>
+            <p class="text-lg text-gray-700 mb-2">① カメラの許可を求められたら「許可」してください。</p>
+            <p class="text-lg text-gray-700 mb-4">② 以下の「HIROマーカー」を印刷し、カメラに映してください。</p>
+            <img src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" alt="HIRO Marker Image" class="marker-image"/>
+            <p class="text-sm text-gray-600 mt-4">
+                <a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" target="_blank" class="text-indigo-600 hover:underline">HIROマーカー画像をダウンロード・印刷する</a>
+            </p>
+            <button id="understoodButton" class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-300 ease-in-out">
+                理解しました
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('startButton');
+            const understoodButton = document.getElementById('understoodButton');
+            const initialOverlay = document.getElementById('initial-overlay');
+            const instructionsOverlay = document.getElementById('instructions-overlay');
+            const arScene = document.querySelector('a-scene');
+
+            // Initially hide the AR scene, it will be displayed when the 'Start' button is clicked.
+            // This prevents camera access requests before the user is ready.
+            arScene.style.display = 'none';
+
+            // Event listener for the '始める' (Start) button
+            startButton.addEventListener('click', () => {
+                console.log('Start button clicked. Hiding initial overlay, showing instructions and AR scene.');
+                initialOverlay.classList.add('hidden'); // Hide the initial overlay
+                instructionsOverlay.classList.remove('hidden'); // Show the instructions overlay
+                arScene.style.display = 'block'; // Show the AR scene (triggers camera permission)
+            });
+
+            // Event listener for the '理解しました' (Understood) button
+            understoodButton.addEventListener('click', () => {
+                console.log('Understood button clicked. Hiding instructions overlay.');
+                instructionsOverlay.classList.add('hidden'); // Hide the instructions overlay
+            });
+
+            // Optional: Listen for AR.js camera initialization for debugging or further actions
+            arScene.addEventListener('arjs-original-camera-init', function () {
+                console.log('AR.js camera initialized successfully.');
+            });
+        });
+    </script>
 </body>
 </html>
