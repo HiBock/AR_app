@@ -66,19 +66,19 @@
         <!-- Define a marker. We'll use the 'HIRO' preset marker. -->
         <a-marker preset='hiro'>
             <!-- This entity will appear when the HIRO marker is detected -->
-            <!-- Placeholder character: a simple box -->
-            <a-box position='0 0.5 0' material='color: #ef4444; opacity: 0.8;' scale='0.8 0.8 0.8' rotation='0 45 0'
-                   animation="property: rotation; to: 0 360 0; loop: true; dur: 3000;">
-                <a-text value="キャラ登場！" color="#fff" align="center" position="0 0.5 0" scale="1.5 1.5 1.5"></a-text>
-                <a-sphere radius="0.3" position="0 0.8 0" color="#fef08a"></a-sphere> <!-- Head -->
-                <a-box width="0.2" height="0.6" depth="0.2" position="-0.4 0.2 0" color="#fef08a"></a-box> <!-- Left Arm -->
-                <a-box width="0.2" height="0.6" depth="0.2" position="0.4 0.2 0" color="#fef08a"></a-box> <!-- Right Arm -->
-                <a-box width="0.2" height="0.6" depth="0.2" position="-0.2 -0.3 0" color="#fef08a"></a-box> <!-- Left Leg -->
-                <a-box width="0.2" height="0.6" depth="0.2" position="0.2 -0.3 0" color="#fef08a"></a-box> <!-- Right Leg -->
-            </a-box>
-            <!-- You can replace the a-box with a custom GLTF model like this: -->
-            <!-- <a-entity gltf-model="url(path/to/your/character.gltf)" scale="0.1 0.1 0.1" position="0 0 0"></a-entity> -->
-            <!-- Ensure your GLTF model is correctly scaled and positioned for the marker. -->
+            <!-- Placeholder for your Genshin Impact character model -->
+            <!-- ここに原神のキャラクターモデルを配置します。 -->
+            <!-- gltf-model="url(ここにあなたのGLTF/GLBモデルのURLを貼り付けます)" -->
+            <!-- 以下のサンプルモデルはA-Frameの公式サンプルです。ご自身のモデルに置き換えてください。 -->
+            <a-entity
+                gltf-model="url(https://cdn.aframe.io/examples/ar/models/RobotExpressive.glb)"
+                scale="0.5 0.5 0.5"  <!-- モデルの大きさを調整します (例: 0.5 0.5 0.5) -->
+                position="0 0.5 0" <!-- モデルの位置を調整します (例: 0 0.5 0) -->
+                rotation="0 180 0" <!-- 必要に応じてモデルの向きを調整します (例: 0 180 0) -->
+                animation-mixer  <!-- GLTFモデルにアニメーションが含まれている場合、これを追加します -->
+            ></a-entity>
+            <a-text value="原神キャラ登場！" color="#000" align="center" position="0 1.5 0" scale="0.8 0.8 0.8"
+                    rotation="-90 0 0" background="white" background-opacity="0.8"></a-text>
         </a-marker>
 
         <!-- A-frame camera for viewing the scene -->
@@ -89,7 +89,7 @@
     <div id="initial-overlay" class="overlay-common z-30">
         <div class="instructions-box">
             <h2 class="text-3xl font-extrabold text-indigo-700 mb-4">ARアプリへようこそ！</h2>
-            <p class="text-gray-700 text-lg mb-6">カメラを料理に向けると、特定のキャラクターが出現します。</p>
+            <p class="text-gray-700 text-lg mb-6">カメラを料理に向けると、原神のキャラクターが出現します。</p>
             <button id="startButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
                 始める
             </button>
